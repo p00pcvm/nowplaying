@@ -3,36 +3,107 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Full-Page Video</title>
+  <title>Now Playing: GIGOplex Episode 1//9</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
+      font-family: Arial, sans-serif;
     }
     video {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      z-index: 1;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 2em;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .overlay.visible {
+      opacity: 1;
+    }
+    #pausedText {
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
+    }
+    #additionalText {
+      flex: 1;
+      text-align: center;
+      font-style: italic;
+      padding: 1em 0;
+    }
+    #linksText {
+      flex: 1;
+      text-align: center;
+      user-select: text;
     }
   </style>
 </head>
 <body>
-  <video id="bgVideo" loop autoplay muted>
-    <source src="https://bafybeidiwtb5qluf4nji425m3ui4d7xnectzha76u6prx4yujoq5rmaupm.ipfs.w3s.link/GIGOloopable.mp4" type="video/mp4" />
+  <video id="bgVideo" loop autoplay muted playsinline>
+    <source id="videoSource" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
+<div id="videoOverlay" class="overlay visible" role="alert" aria-live="assertive" aria-atomic="true">
+  <div id="container">
+    <div id="pausedText">Now Playing: GIGOplex Episode 1//9 </div>
+    <div id="additionalText">(Click/Tap/Spacebar to Resume)</div>
+    <div id="linksText">https://rodeo.club/@lake</div>
+  </div>
+</div>
 
   <script>
+    const videoSource = document.getElementById('videoSource');
+    const ipfsDirectory = 'https://bafybeia5hu6mv34zuue2ulnygpxlqjmy36fynbdw2kdsueruio7nqhbtgy.ipfs.dweb.link/';
+    const videoFiles = ['GIGOsegmentMirrorLoop1.mp4', 'GIGOsegmentMirrorLoop2.mp4', 'GIGOsegmentMirrorLoop3.mp4', 'GIGOsegmentMirrorLoop4.mp4', 'GIGOsegmentMirrorLoop5.mp4', 'GIGOsegmentMirrorLoop6.mp4', 'GIGOsegmentMirrorLoop7.mp4', 'GIGOsegmentMirrorLoop8.mp4', 'GIGOsegmentMirrorLoop9.mp4'];
+
+    const randomIndex = Math.floor(Math.random() * videoFiles.length);
+    const videoUrl = ipfsDirectory + videoFiles[randomIndex];
+
+    videoSource.src = videoUrl;
+
     const video = document.getElementById("bgVideo");
+    const overlay = document.getElementById("videoOverlay");
+
     const togglePlay = () => {
       video.paused ? video.play() : video.pause();
     };
-    video.addEventListener("click", togglePlay);
-    video.addEventListener("touchstart", togglePlay);
-  </script>
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === " ") {
+      togglePlay();
+  }
+});
+
+  video.addEventListener("play", () => {
+    overlay.classList.remove('visible');
+    document.getElementById('pausedText').style.display = 'none';
+});
+
+  video.addEventListener("pause", () => {
+    overlay.classList.add('visible');
+    document.getElementById('pausedText').style.display = 'block';
+});
+  video.addEventListener("click", togglePlay);
+  video.addEventListener("touchstart", togglePlay);  </script>
 </body>
 </html>
